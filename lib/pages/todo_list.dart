@@ -1,45 +1,38 @@
 import 'package:flutter/material.dart';
 
 class TodoListPage extends StatelessWidget {
-  TodoListPage({Key? key}) : super(key: key);
-
-  final TextEditingController emailController = TextEditingController();
-  String get emailValue => emailController.text;
-
-  void login() {
-    print(emailValue);
-  }
-
-  void onChangeEmail(String event) {
-    print(event);
-  }
-
-  void onSubmittedEmail(String event) {
-    print(event);
-  }
+  const TodoListPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-            child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(
-            controller: emailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-            ),
-            keyboardType: TextInputType.emailAddress,
-            autocorrect: false,
-            onChanged: onChangeEmail,
-            onSubmitted: onSubmittedEmail,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              const Expanded(
+                  child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Adicione uma tarefa',
+                ),
+              )),
+              const SizedBox(width: 8),
+              ElevatedButton(
+                  onPressed: () {},
+                  child: const Icon(
+                    Icons.add,
+                    size: 30,
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    primary: const Color(0xff00d7f3),
+                    padding: const EdgeInsets.all(15),
+                  )),
+            ],
           ),
-          ElevatedButton(onPressed: login, child: const Text('Entrar'))
-        ],
+        ),
       ),
-    )));
+    );
   }
 }

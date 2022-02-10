@@ -1,7 +1,24 @@
 import 'package:flutter/material.dart';
 
-class TodoListPage extends StatelessWidget {
+class TodoListPage extends StatefulWidget {
   const TodoListPage({Key? key}) : super(key: key);
+
+  @override
+  State<TodoListPage> createState() => _TodoListPageState();
+}
+
+class _TodoListPageState extends State<TodoListPage> {
+  List<String> todos = [];
+  final addTaskController = TextEditingController();
+
+  void handleAdd() {
+    if (addTaskController.text == '') return;
+    setState(() {
+      todos.add(addTaskController.text);
+    });
+    print(todos);
+    addTaskController.clear();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,17 +31,23 @@ class TodoListPage extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Expanded(
+                  Expanded(
                     child: TextField(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         labelText: 'Adicione uma tarefa',
                       ),
+                      controller: addTaskController,
+                      onSubmitted: (_) {
+                        handleAdd();
+                      },
                     ),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      handleAdd();
+                    },
                     child: const Icon(
                       Icons.add,
                       size: 30,
@@ -36,8 +59,24 @@ class TodoListPage extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(
-                height: 16,
+              Flexible(
+                child: ListView(
+                  shrinkWrap: true,
+                  children: [
+                    for (String todo in todos)
+                      ListTile(
+                        title: Text(todo),
+                        subtitle: const Text('09/02/2022'),
+                        leading: const Icon(
+                          Icons.save,
+                          size: 16,
+                        ),
+                        onTap: () {
+                          print(todo);
+                        },
+                      ),
+                  ],
+                ),
               ),
               Row(
                 children: [

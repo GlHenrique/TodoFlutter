@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:todo_flutter/models/todo.dart';
+import 'package:todo_flutter/widgets/todo_list_item.dart';
 
 class TodoListPage extends StatefulWidget {
   const TodoListPage({Key? key}) : super(key: key);
@@ -8,92 +10,91 @@ class TodoListPage extends StatefulWidget {
 }
 
 class _TodoListPageState extends State<TodoListPage> {
-  List<String> todos = [];
+  List<Todo> todos = [];
   final addTaskController = TextEditingController();
 
   void handleAdd() {
     if (addTaskController.text == '') return;
     setState(() {
-      todos.add(addTaskController.text);
+      Todo newTodo = Todo(title: addTaskController.text, date: DateTime.now());
+      todos.add(newTodo);
     });
-    print(todos);
     addTaskController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        labelText: 'Adicione uma tarefa',
-                      ),
-                      controller: addTaskController,
-                      onSubmitted: (_) {
-                        handleAdd();
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: () {
-                      handleAdd();
-                    },
-                    child: const Icon(
-                      Icons.add,
-                      size: 30,
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color(0xff00d7f3),
-                      padding: const EdgeInsets.all(15),
-                    ),
-                  ),
-                ],
-              ),
-              Flexible(
-                child: ListView(
-                  shrinkWrap: true,
-                  children: [
-                    for (String todo in todos)
-                      ListTile(
-                        title: Text(todo),
-                        subtitle: const Text('09/02/2022'),
-                        leading: const Icon(
-                          Icons.save,
-                          size: 16,
+    return SafeArea(
+      child: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Adicione uma tarefa',
+                          ),
+                          controller: addTaskController,
+                          onSubmitted: (_) {
+                            handleAdd();
+                          },
                         ),
-                        onTap: () {
-                          print(todo);
-                        },
                       ),
-                  ],
-                ),
-              ),
-              Row(
-                children: [
-                  const Expanded(
-                    child: Text('Você possui 0 tarefas pendentes'),
+                      const SizedBox(width: 8),
+                      ElevatedButton(
+                        onPressed: () {
+                          handleAdd();
+                        },
+                        child: const Icon(
+                          Icons.add,
+                          size: 30,
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          primary: const Color(0xff00d7f3),
+                          padding: const EdgeInsets.all(15),
+                        ),
+                      ),
+                    ],
                   ),
-                  ElevatedButton(
-                    onPressed: () {},
-                    child: const Text('Limpar tudo'),
-                    style: ElevatedButton.styleFrom(
-                      primary: const Color(0xff00d7f3),
-                      padding: const EdgeInsets.all(15),
+                ),
+                Flexible(
+                  child: ListView(
+                    shrinkWrap: true,
+                    children: [
+                      for (Todo todo in todos)
+                        TodoListItem(
+                          item: todo,
+                        ),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child:
+                          Text('Você possui ${todos.length} tarefas pendentes'),
                     ),
-                  )
-                ],
-              )
-            ],
+                    ElevatedButton(
+                      onPressed: () {},
+                      child: const Text('Limpar tudo'),
+                      style: ElevatedButton.styleFrom(
+                        primary: const Color(0xff00d7f3),
+                        padding: const EdgeInsets.all(15),
+                      ),
+                    )
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       ),

@@ -22,6 +22,19 @@ class _TodoListPageState extends State<TodoListPage> {
     addTaskController.clear();
   }
 
+  void onDelete(Todo todo) {
+    setState(() {
+      todos.remove(todo);
+    });
+  }
+
+  void clearAll() {
+    if (todos.isEmpty) return;
+    setState(() {
+      todos.clear();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -72,6 +85,7 @@ class _TodoListPageState extends State<TodoListPage> {
                       for (Todo todo in todos)
                         TodoListItem(
                           item: todo,
+                          onDelete: onDelete,
                         ),
                       const SizedBox(height: 16),
                     ],
@@ -84,7 +98,9 @@ class _TodoListPageState extends State<TodoListPage> {
                           Text('Você possui ${todos.length} tarefas pendentes'),
                     ),
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        clearAll();
+                      },
                       child: const Text('Limpar tudo'),
                       style: ElevatedButton.styleFrom(
                         primary: const Color(0xff00d7f3),

@@ -10,8 +10,10 @@ class TodoListPage extends StatefulWidget {
 }
 
 class _TodoListPageState extends State<TodoListPage> {
-  List<Todo> todos = [];
   final addTaskController = TextEditingController();
+  List<Todo> todos = [];
+  Todo? deletedTodo;
+  int? deletedTodoIndex;
 
   void handleAdd() {
     if (addTaskController.text == '') return;
@@ -22,17 +24,71 @@ class _TodoListPageState extends State<TodoListPage> {
     addTaskController.clear();
   }
 
+  void undo() {
+    setState(() {
+      todos.insert(deletedTodoIndex!, deletedTodo!);
+    });
+  }
+
   void onDelete(Todo todo) {
+    deletedTodo = todo;
+    deletedTodoIndex = todos.indexOf(todo);
     setState(() {
       todos.remove(todo);
     });
+
+    // Dismiss current snackbar if exists
+    ScaffoldMessenger.of(context).clearSnackBars();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Tarefa ${todo.title} foi removida com suceso!',
+        ),
+        action: SnackBarAction(
+          label: 'Desfazer',
+          onPressed: () {
+            undo();
+          },
+          textColor: Colors.white,
+        ),
+        backgroundColor: Colors.red,
+        duration: const Duration(seconds: 5),
+      ),
+    );
   }
 
   void clearAll() {
     if (todos.isEmpty) return;
     setState(() {
       todos.clear();
+      Navigator.of(context).pop();
     });
+  }
+
+  void showDeleteConfirmAll() {
+    if (todos.isEmpty) return;
+    showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text('Limpar tudo?'),
+              content: const Text('Esta ação removerá todas as tarefas'),
+              actions: [
+                TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text('Não')),
+                TextButton(
+                    onPressed: () {
+                      clearAll();
+                    },
+                    child: const Text('Sim')),
+              ],
+            ));
+    // setState(() {
+    //   todos.clear();
+    // });
   }
 
   @override
@@ -99,7 +155,7 @@ class _TodoListPageState extends State<TodoListPage> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        clearAll();
+                        showDeleteConfirmAll();
                       },
                       child: const Text('Limpar tudo'),
                       style: ElevatedButton.styleFrom(

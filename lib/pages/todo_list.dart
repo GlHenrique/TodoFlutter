@@ -69,26 +69,26 @@ class _TodoListPageState extends State<TodoListPage> {
   void showDeleteConfirmAll() {
     if (todos.isEmpty) return;
     showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: const Text('Limpar tudo?'),
-              content: const Text('Esta ação removerá todas as tarefas'),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text('Não')),
-                TextButton(
-                    onPressed: () {
-                      clearAll();
-                    },
-                    child: const Text('Sim')),
-              ],
-            ));
-    // setState(() {
-    //   todos.clear();
-    // });
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Limpar tudo?'),
+        content: const Text('Esta ação removerá todas as tarefas'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('Não'),
+          ),
+          TextButton(
+            onPressed: () {
+              clearAll();
+            },
+            child: const Text('Sim'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override

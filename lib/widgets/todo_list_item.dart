@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:todo_flutter/models/todo.dart';
 
 class TodoListItem extends StatelessWidget {
-  const TodoListItem({Key? key, required this.item, required this.onDelete})
+  const TodoListItem({required this.item, required this.onDelete, Key? key})
       : super(key: key);
 
   final Todo item;

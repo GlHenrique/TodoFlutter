@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todo_flutter/models/todo.dart';
+import 'package:todo_flutter/repositories/todo_repository.dart';
 import 'package:todo_flutter/widgets/todo_list_item.dart';
 
 class TodoListPage extends StatefulWidget {
@@ -11,15 +12,25 @@ class TodoListPage extends StatefulWidget {
 
 class _TodoListPageState extends State<TodoListPage> {
   final addTaskController = TextEditingController();
+  final TodoRepository todoRepository = TodoRepository();
   List<Todo> todos = [];
   Todo? deletedTodo;
   int? deletedTodoIndex;
+  String? errorText;
 
   void handleAdd() {
-    if (addTaskController.text == '') return;
+    if (addTaskController.text == '') {
+      setState(() {
+        errorText = 'Tarefa inválida';
+      });
+      return;
+    }
+
     setState(() {
       Todo newTodo = Todo(title: addTaskController.text, date: DateTime.now());
       todos.add(newTodo);
+      todoRepository.saveTodoList(todos);
+      errorText = null;
     });
     addTaskController.clear();
   }
@@ -27,6 +38,7 @@ class _TodoListPageState extends State<TodoListPage> {
   void undo() {
     setState(() {
       todos.insert(deletedTodoIndex!, deletedTodo!);
+      todoRepository.saveTodoList(todos);
     });
   }
 
@@ -35,6 +47,7 @@ class _TodoListPageState extends State<TodoListPage> {
     deletedTodoIndex = todos.indexOf(todo);
     setState(() {
       todos.remove(todo);
+      todoRepository.saveTodoList(todos);
     });
 
     // Dismiss current snackbar if exists
@@ -63,6 +76,7 @@ class _TodoListPageState extends State<TodoListPage> {
     setState(() {
       todos.clear();
       Navigator.of(context).pop();
+      todoRepository.saveTodoList(todos);
     });
   }
 
@@ -92,6 +106,17 @@ class _TodoListPageState extends State<TodoListPage> {
   }
 
   @override
+  void initState() {
+    super.initState();
+
+    todoRepository.getTodoList().then((value) {
+      setState(() {
+        todos = value;
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
@@ -107,13 +132,28 @@ class _TodoListPageState extends State<TodoListPage> {
                     children: [
                       Expanded(
                         child: TextField(
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
                             labelText: 'Adicione uma tarefa',
+                            errorText: errorText,
+                            labelStyle: const TextStyle(
+                              color: Color(0xff00d7f3),
+                            ),
+                            focusedBorder: const OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: Color(0xff00d7f3),
+                                width: 2,
+                              ),
+                            ),
                           ),
                           controller: addTaskController,
                           onSubmitted: (_) {
                             handleAdd();
+                          },
+                          onChanged: (_) {
+                            setState(() {
+                              errorText = null;
+                            });
                           },
                         ),
                       ),
